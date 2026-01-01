@@ -30,4 +30,40 @@ MSI permission errors), the final solution uses Oracle XE via Docker.
 
 ### 4.1 Oracle XE 21c Installation Failure (Error 1311)
 - Cause: Korean characters in Windows user path
-- Error message:
+- Error message: Error 1311: Source file not found ...
+
+  
+### 4.2 TEMP Directory Workaround and Side Effect (Error 2503)
+- TEMP/TMP changed to `C:\temp`
+- New issue:Error 2503: Called RunScript when not marked in progress
+
+  - Root cause: MSI installer permission issues on custom TEMP directory
+
+---
+
+## 5. Attempted Solutions
+- Change Oracle installation directory to English path
+- Override TEMP/TMP environment variables
+- Run installer as Administrator
+- Downgrade Oracle XE version (21c → 11g)
+- Re-register Windows Installer
+
+> Result: Windows-native Oracle XE installation remained unstable.
+
+---
+
+## 6. Final Solution: Oracle XE with Docker
+
+### 6.1 Why Docker
+- Avoid Windows MSI installer issues
+- Avoid Korean path encoding problems
+- Easy cleanup and reproducibility
+
+### 6.2 Docker Command
+```bash
+docker run -d \
+--name oracle-xe \
+-p 1521:1521 \
+-e ORACLE_PASSWORD=hr1 \
+gvenzl/oracle-xe:11
+
